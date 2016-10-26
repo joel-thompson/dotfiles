@@ -1,2 +1,2 @@
 # dotfiles
-dotfile collection
+dotfile collection/templates
