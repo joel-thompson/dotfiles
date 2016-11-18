@@ -10,3 +10,4 @@ alias gs="git status"
 # bash aliases
 alias la="ls -a"
 alias ll="ls -la"
+alias reload="source ~/.bash_profile"  #technically machine dependent
