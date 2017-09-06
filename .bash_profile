@@ -6,6 +6,12 @@ export PATH=/usr/local/bin:$PATH
 
 alias mypry='ruby ~/dev/Ruby/my_intercom_console/start_pry.rb'
 
+# sets my intercom user
+export INTERCOM_USER=joel.thompson
+
+# enable using the billing service
+export BILLING_SERVICE_AVAILABLE=true
+
 # hammer path
 export PATH=$HOME/bin:$PATH
 
@@ -21,29 +27,36 @@ export NVM_DIR="/Users/joelthompson/.nvm"
 # yarn fucking shit
 export PATH="$HOME/.config/yarn/global/node_modules/.bin/:$PATH"
 
-# sets my intercom user
-export INTERCOM_USER=joel.thompson
+# ember and yarn
+# leave this commented out for now, it seemed to cause some issues.
+export PATH=$HOME/.yarn/bin:$PATH
+
 
 # add pilot to my path
 export PATH=$HOME/.pilot/shims:$HOME/.pilot/bin:$PATH
 eval $(pilot env)
 
-# ember and yarn
-# leave this commented out for now, it seemed to cause some issues.
-export PATH=$HOME/.yarn/bin:$PATH
 
-# enable using the billing service
-export BILLING_SERVICE_AVAILABLE=true
 
 # postgres
-export DATABASE_URL=postgres:///$(whoami)
+## IMPORTANT -- This was causing all my rails apps to use the same development DB
+## check out this guide: http://guides.rubyonrails.org/configuring.html#configuring-a-database
+# export DATABASE_URL=postgres:///$(whoami)
+
 
 ### Machine Independent ###
+
+parse_git_branch_no_parens() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1/'
+}
 
 # git aliases
 alias g="git "
 alias gs="git status"
-alias gamend="git commit --amend && git push origin -f HEAD"
+#alias gpu="git push -u origin $(parse_git_branch_no_parens)" not sure if this one works
+# alias mypush="git push -u origin HEAD" #need to test it
+
+alias amend="git commit --amend && git push origin -f HEAD"
 
 # bash aliases
 alias la="ls -a"
