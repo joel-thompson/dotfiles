@@ -8,10 +8,14 @@ alias amendnopush="git commit --amend"
 # bash aliases
 alias la="ls -a"
 alias ll="ls -la"
-alias reload="source ~/.bash_profile"  
+alias reload="source ~/.bash_profile"
 
 # git branch in prompt.
 parse_git_branch() {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 export PS1="\u@\h \W\[\033[32m\]\$(parse_git_branch)\[\033[00m\] $ "
+
+# loads my developer environmental variables. always located at ~/.dev_env
+# contains api keys and such, to be loaded into projects
+. ~/.dev_env
