@@ -5,6 +5,13 @@
 alias amend="git commit --amend && git push origin -f HEAD"
 alias amendnopush="git commit --amend"
 
+alias gs="git status"
+alias ga="git add"
+alias gch="git checkout"
+alias gchm="git checkout master"
+alias gco="git commit -m"
+alias gp="git pull"
+
 # bash aliases
 alias la="ls -a"
 alias ll="ls -la"
