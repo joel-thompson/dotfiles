@@ -3,14 +3,19 @@
 
 # git aliases
 alias amend="git commit --amend && git push origin -f HEAD"
-alias amendnopush="git commit --amend"
 
 alias gs="git status"
 alias ga="git add"
+
+alias gcom="git commit -m"
+alias gcoa="git commit --amend"
+
 alias gch="git checkout"
 alias gchm="git checkout master"
-alias gco="git commit -m"
-alias gp="git pull"
+
+alias gpl="git pull"
+
+alias gph="git push -u origin"
 
 # bash aliases
 alias la="ls -a"
