@@ -12,3 +12,6 @@ export PATH
 
 # PG path
 PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+
+# run wow as admin
+sudo /Applications/WoW_Classic/WoW_Classic.app/Contents/MacOS/World\ of\ Warcraft
