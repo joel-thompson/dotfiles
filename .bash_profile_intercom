@@ -8,6 +8,7 @@ alias mypry='ruby ~/dev/Ruby/my_intercom_console/start_pry.rb'
 alias hamcon="hammer console production"
 alias hamcert="hammer cert"
 alias hambill="hammer console billing-production-console"
+alias hamwork="hammer workspace -u joel.thompson"
 
 # upgrade ember dependencies
 alias emberup="~/src/embercom/shell/upgrade_dependencies"
