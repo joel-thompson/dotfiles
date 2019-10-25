@@ -42,3 +42,7 @@ export PATH=$HOME/.yarn/bin:$PATH
 
 # env variables for hyrbrid mode Intercom - not sure I need this
 source ~/src/intercom/script/env
+
+# set up assume role
+export AWS_DEFAULT_REGION="us-east-1"
+source $(which assume-role)
