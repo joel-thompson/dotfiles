@@ -1,20 +1,14 @@
 ### Machine Dependant ###
 
-# Alias for mypry
-alias mypry="ruby ~/Documents/Code/Ruby/mypry/mypry.rb"
-
 # Setup rbenv
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+# if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # Path ptyhon
-PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
-export PATH
+# PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
+# export PATH
 
 # PG path
-PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
-
-# run wow as admin not really used anymore keeping in case though
-alias playwow="sudo /Applications/WoW_Classic/WoW_Classic.app/Contents/MacOS/World\ of\ Warcraft"
+# PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
 
 # git branch in prompt.
 parse_git_branch() {

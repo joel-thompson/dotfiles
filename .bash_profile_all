@@ -25,3 +25,7 @@ alias reload="source ~/.bash_profile"
 # loads my developer environmental variables. always located at ~/.dev_env
 # contains api keys and such, to be loaded into projects
 . ~/.dev_env
+
+# example of that file
+# export SENDGRID_USERNAME=foo
+# export SENDGRID_PASSWORD=bar
