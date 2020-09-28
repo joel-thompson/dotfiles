@@ -17,6 +17,9 @@ alias gpl="git pull"
 
 alias gph="git push -u origin"
 
+# quickly make an update commit
+alias gqp="ga . && gcom 'update' && git push"
+
 # bash aliases
 alias la="ls -a"
 alias ll="ls -la"
