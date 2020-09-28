@@ -20,15 +20,16 @@ alias gph="git push -u origin"
 # quickly make an update commit
 alias gqp="ga . && gcom 'update' && git push"
 
-test_function() {
+# quickly make an update commit but with argument support for the comment
+qpu() {
   commit_comment=${1:-'update'} 
-  echo 'adding files'
+  echo '-- adding files --'
   ga .
-  echo "commiting files with comment: $commit_comment"
+  echo "-- commiting files with comment: $commit_comment --"
   gcom "$commit_comment"
-  echo 'pushing files'
+  echo '-- pushing files --'
   git push
-  echo 'done!'
+  echo '-- done --'
 }
 
 # bash aliases
