@@ -18,10 +18,10 @@ alias gpl="git pull"
 alias gph="git push -u origin"
 
 # quickly make an update commit
-alias gqp="ga . && gcom 'update' && git push"
+# alias gqp="ga . && gcom 'update' && git push"
 
 # quickly make an update commit but with argument support for the comment
-qpu() {
+qph() {
   commit_comment=${1:-'update'} 
   echo '-- adding files --'
   ga .
