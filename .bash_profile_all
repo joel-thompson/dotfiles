@@ -1,6 +1,5 @@
 # collection of bash profile things for all my environments
 
-
 # git aliases
 alias amend="git commit --amend && git push origin -f HEAD"
 
