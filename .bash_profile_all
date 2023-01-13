@@ -1,6 +1,6 @@
 # collection of bash profile things for all my environments
 
-# git aliases
+## git aliases
 alias amend="git commit --amend && git push origin -f HEAD"
 
 alias gs="git status"
@@ -22,21 +22,6 @@ parse_git_branch() {
 }
 export PS1="\u@\h \W\[\033[32m\]\$(parse_git_branch)\[\033[00m\] $ "
 
-# quickly make an update commit
-# alias gqp="ga . && gcom 'update' && git push"
-
-# quickly make an update commit but with argument support for the comment
-qph() {
-  commit_comment=${1:-'update'} 
-  echo '-- adding files --'
-  ga .
-  echo "-- commiting files with comment: $commit_comment --"
-  gcom "$commit_comment"
-  echo '-- pushing files --'
-  git push
-  echo '-- done --'
-}
-
 # bash aliases
 alias la="ls -a"
 alias ll="ls -la"
@@ -49,3 +34,17 @@ alias reload="source ~/.bash_profile"
 # example of that file
 # export SENDGRID_USERNAME=foo
 # export SENDGRID_PASSWORD=bar
+
+## scripts
+
+# quickly make an update commit but with argument support for the comment
+qph() {
+  commit_comment=${1:-'update'} 
+  echo '-- adding files --'
+  ga .
+  echo "-- commiting files with comment: $commit_comment --"
+  gcom "$commit_comment"
+  echo '-- pushing files --'
+  git push
+  echo '-- done --'
+}
