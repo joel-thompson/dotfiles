@@ -22,3 +22,4 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 
 export PATH=$PATH:$(go env GOPATH)/bin
+export PATH="/Users/joelthompson/src/frontplane/bin:$PATH"
