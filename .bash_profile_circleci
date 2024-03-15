@@ -17,6 +17,8 @@ export NVM_DIR=”$HOME/.nvm”
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 [[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
 
+alias installyarn="npm install --global yarn"
+
 
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 # export JAVA_HOME=$(/usr/libexec/java_home -v 1.8) fix later
