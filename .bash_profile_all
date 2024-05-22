@@ -21,6 +21,7 @@ alias gph="git push -u origin"
 
 alias gkillmaster="git fetch origin && git reset --hard origin/master"
 alias gkillmain="git fetch origin && git reset --hard origin/main"
+alias gkill-="git fetch origin && git reset --hard origin/"
 
 # git branch in prompt.
 parse_git_branch() {

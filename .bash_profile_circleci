@@ -21,6 +21,7 @@ alias installyarn="npm install --global yarn"
 
 
 export PATH="$(brew --prefix python)/libexec/bin:$PATH"
+export PATH="/Users/Joel/Library/Python/3.12/bin:$PATH"
 # export JAVA_HOME=$(/usr/libexec/java_home -v 1.8) fix later
 # alias ngrok="/Applications/ngrok"
 
