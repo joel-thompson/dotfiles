@@ -37,3 +37,15 @@ fi
 
 # export PATH=$PATH:$(go env GOPATH)/bin commented out because it's not working
 export PATH="/Users/joelthompson/src/frontplane/bin:$PATH"
+export PATH="$PATH:$HOME/.pnpm"
+# export PATH="$PATH:$HOME/.local/share/uv/python/cpython-3.14.0a5-macos-aarch64-none/bin/"
+
+alias python="$HOME/.local/share/uv/python/cpython-3.14.0a5-macos-aarch64-none/bin/python"
+
+# pnpm
+export PNPM_HOME="/Users/Joel/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
