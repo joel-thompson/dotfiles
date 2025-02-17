@@ -40,7 +40,7 @@ export PATH="/Users/joelthompson/src/frontplane/bin:$PATH"
 export PATH="$PATH:$HOME/.pnpm"
 # export PATH="$PATH:$HOME/.local/share/uv/python/cpython-3.14.0a5-macos-aarch64-none/bin/"
 
-alias python="$HOME/.local/share/uv/python/cpython-3.14.0a5-macos-aarch64-none/bin/python"
+alias pyd="$HOME/.local/share/uv/python/cpython-3.14.0a5-macos-aarch64-none/bin/python"
 
 # pnpm
 export PNPM_HOME="/Users/Joel/Library/pnpm"
