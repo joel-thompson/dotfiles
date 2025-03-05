@@ -78,3 +78,7 @@ _nvmrc_hook() {
 if ! [[ "${PROMPT_COMMAND:-}" =~ _nvmrc_hook ]]; then
   PROMPT_COMMAND="_nvmrc_hook${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 fi
+
+alias mcp-inspect="npx @modelcontextprotocol/inspector"
+alias nu='nvm use'
+alias nr="npm run"
