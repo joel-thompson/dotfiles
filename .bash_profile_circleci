@@ -53,3 +53,4 @@ esac
 # Cursor Rules aliases
 alias crget="/Users/Joel/src/my_cursor_rules/copy-to-project.sh"  # Get rules from repo
 alias crput="/Users/Joel/src/my_cursor_rules/copy-to-repo.sh"     # Put rules into repo
+source "/Users/Joel/src/my_cursor_rules/completion.sh"
