@@ -1,7 +1,8 @@
 ### Machine Dependant ###
 
 # specific to this machine and set up by installing specific things
-# eval "$(rbenv init -)"
+eval "$(rbenv init -)"
+
 
 # older version
 # export NVM_DIR="$HOME/.nvm"
