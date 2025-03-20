@@ -4,7 +4,7 @@
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 ## git aliases
-alias amend="git commit --amend && git push origin -f HEAD"
+
 
 alias gs="git status"
 alias ga="git add"
@@ -13,11 +13,14 @@ alias gcom="git commit -m"
 alias gcoa="git commit --amend"
 
 alias gch="git checkout"
-alias gchm="git checkout master"
+alias gchm="git checkout main"
 
 alias gpl="git pull"
 
 alias gph="git push -u origin"
+
+alias gpf="git push --force-with-lease"
+alias gp="git push"
 
 alias gkillmaster="git fetch origin && git reset --hard origin/master"
 alias gkillmain="git fetch origin && git reset --hard origin/main"
@@ -82,4 +85,3 @@ fi
 alias mcp-inspect="npx @modelcontextprotocol/inspector"
 alias nu='nvm use'
 alias nr="npm run"
-alias claude-config="cursor ~/Library/Application\ Support/Claude/claude_desktop_config.json"
