@@ -8,6 +8,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 alias gs="git status"
 alias ga="git add"
+alias gas="git add src/*"
 
 alias gcom="git commit -m"
 alias gcoa="git commit --amend"
