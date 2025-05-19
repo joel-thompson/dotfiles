@@ -58,3 +58,6 @@ source "/Users/Joel/src/my_cursor_rules/completion.sh"
 alias claude-config="cursor ~/Library/Application\ Support/Claude/claude_desktop_config.json"
 
 alias dotfiles="cursor ~/src/dotfiles"
+
+alias gi="/Users/Joel/src/gi/dist/cli.js -c"
+alias gid="/Users/Joel/src/gi/dist/cli.js -c -d"
