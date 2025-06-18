@@ -23,6 +23,9 @@ alias gph="git push -u origin"
 alias gpf="git push --force-with-lease"
 alias gp="git push"
 
+alias gpr="gh pr create -d"
+alias gpv="gh pr view --web"
+
 alias gkillmaster="git fetch origin && git reset --hard origin/master"
 alias gkillmain="git fetch origin && git reset --hard origin/main"
 gkill() {
