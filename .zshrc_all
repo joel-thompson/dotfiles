@@ -93,3 +93,29 @@ add-zsh-hook precmd _nvmrc_hook
 alias mcp-inspect="npx @modelcontextprotocol/inspector"
 alias nu='nvm use'
 alias nr="npm run"
+
+# --- Zsh completion & inline suggestions ---
+autoload -Uz compinit && compinit
+
+# Make the standard Tab completion widget (expand-or-complete) also accept an
+# inline autosuggestion before falling back to normal completion.
+# (binding set inside autosuggestions block below)
+
+# zsh-autosuggestions: inline gray suggestion after cursor
+if [[ -f "$(brew --prefix 2>/dev/null)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  # Show suggestions in a subtle gray
+  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
+  
+  # Bind Tab to accept suggestions (Ctrl+X Ctrl+F for file completion when needed)
+  bindkey '^I' autosuggest-accept
+fi
+
+# --- Up/Down arrow history substring search (fish-style) ---
+autoload -Uz history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+for map in emacs viins; do
+  bindkey -M $map '^[[A' history-beginning-search-backward-end  # Up
+  bindkey -M $map '^[[B' history-beginning-search-forward-end  # Down
+done
