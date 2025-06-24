@@ -1,0 +1,100 @@
+# collection of bash profile things for all my environments
+
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+## git aliases
+
+
+alias gs="git status"
+alias ga="git add"
+alias gas="git add src/*"
+
+alias gcom="git commit -m"
+alias gcoa="git commit --amend"
+
+alias gch="git checkout"
+alias gchm="git checkout main"
+
+alias gpl="git pull"
+
+alias gph="git push -u origin"
+
+alias gpf="git push --force-with-lease"
+alias gp="git push"
+
+alias gpr="gh pr create -d"
+alias gpv="gh pr view --web"
+
+alias gkillmaster="git fetch origin && git reset --hard origin/master"
+alias gkillmain="git fetch origin && git reset --hard origin/main"
+gkill() {
+  if [ -z "$1" ]; then
+    echo "Branch name required"
+    return 1
+  fi
+  git fetch origin
+  git checkout "$1"
+  git reset --hard origin/"$1"
+}
+
+# git branch in prompt.
+parse_git_branch() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+# export PS1="\u@\h \W\[\033[32m\]\$(parse_git_branch)\[\033[00m\] $ " old
+export PS1="\W\[\033[32m\]\$(parse_git_branch)\[\033[00m\] $ "
+
+# bash aliases
+alias la="ls -a"
+alias ll="ls -la"
+alias reload="source ~/.zshrc"
+
+# loads my developer environmental variables. always located at ~/.dev_env
+# contains api keys and such, to be loaded into projects
+. ~/.dev_env
+
+# example of that file
+# export SENDGRID_USERNAME=foo
+# export SENDGRID_PASSWORD=bar
+
+## scripts
+
+# quickly make an update commit but with argument support for the comment
+qph() {
+  commit_comment=${1:-'update'} 
+  echo '-- adding files --'
+  ga .
+  echo "-- commiting files with comment: $commit_comment --"
+  gcom "$commit_comment"
+  echo '-- pushing files --'
+  git push
+  echo '-- done --'
+}
+
+# auto call nvm use
+_nvmrc_hook() {
+  if [[ $PWD == $PREV_PWD ]]; then
+    return
+  fi
+  
+  PREV_PWD=$PWD
+  [[ -f ".nvmrc" ]] && nvm use
+}
+
+# Hook _nvmrc_hook correctly depending on the shell
+if [[ -n "$ZSH_VERSION" ]]; then
+  autoload -U add-zsh-hook
+  # Run on directory change and before each prompt
+  add-zsh-hook chpwd _nvmrc_hook
+  add-zsh-hook precmd _nvmrc_hook
+else
+  # Bash fallback – preserve existing behaviour
+  if ! [[ "${PROMPT_COMMAND:-}" =~ _nvmrc_hook ]]; then
+    PROMPT_COMMAND="_nvmrc_hook${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+  fi
+fi
+
+alias mcp-inspect="npx @modelcontextprotocol/inspector"
+alias nu='nvm use'
+alias nr="npm run"

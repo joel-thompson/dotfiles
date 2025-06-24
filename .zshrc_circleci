@@ -1,7 +1,7 @@
 ### Machine Dependant ###
 
 # specific to this machine and set up by installing specific things
-eval "$(rbenv init -)"
+eval "$(rbenv init - zsh)"
 
 
 # older version
@@ -72,7 +72,7 @@ export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3
 export PROJECT_ID=circleci-ai-sandboxes
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/Joel/google-cloud-sdk/path.bash.inc' ]; then . '/Users/Joel/google-cloud-sdk/path.bash.inc'; fi
+if [ -f '/Users/Joel/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/Joel/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/Joel/google-cloud-sdk/completion.bash.inc' ]; then . '/Users/Joel/google-cloud-sdk/completion.bash.inc'; fi
+if [ -f '/Users/Joel/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/Joel/google-cloud-sdk/completion.zsh.inc'; fi
