@@ -1,78 +1,95 @@
-### Machine Dependant ###
+# ============================================================================
+# ZSH Configuration - CircleCI Machine Specific
+# Machine-dependent configuration and tools specific to this setup
+# ============================================================================
 
-# specific to this machine and set up by installing specific things
+# ----------------------------------------------------------------------------
+# Language Version Managers
+# ----------------------------------------------------------------------------
+
+# Ruby version management
 eval "$(rbenv init - zsh)"
 
+# Python version management
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
 
-# older version
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"
-# [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && \. "/usr/local/opt/nvm/etc/bash_completion"
-
+# Node.js version management (NVM)
 export NVM_DIR=$HOME/.nvm
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 [[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
 
+# ----------------------------------------------------------------------------
+# Package Managers & Development Tools
+# ----------------------------------------------------------------------------
+
+# Yarn installation helper
 alias installyarn="npm install --global yarn"
 
-
-# export PATH="$(brew --prefix python)/libexec/bin:$PATH" i think this isn't working
-# export PATH="/Users/Joel/Library/Python/3.12/bin:$PATH"
-# export JAVA_HOME=$(/usr/libexec/java_home -v 1.8) fix later
-# alias ngrok="/Applications/ngrok"
-
-# anaconda
-# export PATH="/usr/local/anaconda3/bin:$PATH"
-
-export GOPRIVATE=github.com/circleci/*
-
-
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
-
-# export PATH=$PATH:$(go env GOPATH)/bin commented out because it's not working
-export PATH="/Users/joelthompson/src/frontplane/bin:$PATH"
-export PATH="$PATH:$HOME/.pnpm"
-# export PATH="$PATH:$HOME/.local/share/uv/python/cpython-3.14.0a5-macos-aarch64-none/bin/"
-export PATH="/Users/Joel/.codeium/windsurf/bin:$PATH"
-
-alias pyd="$HOME/.local/share/uv/python/cpython-3.14.0a5-macos-aarch64-none/bin/python"
-
-# pnpm
+# pnpm configuration
 export PNPM_HOME="/Users/Joel/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-# pnpm end
 
-# Cursor Rules aliases
+# ----------------------------------------------------------------------------
+# Go Development
+# ----------------------------------------------------------------------------
+
+# Go private module configuration for CircleCI repositories
+export GOPRIVATE=github.com/circleci/*
+
+# ----------------------------------------------------------------------------
+# Path Extensions
+# ----------------------------------------------------------------------------
+
+# Custom tool paths
+export PATH="/Users/joelthompson/src/frontplane/bin:$PATH"
+export PATH="$PATH:$HOME/.pnpm"
+export PATH="/Users/Joel/.codeium/windsurf/bin:$PATH"
+
+# Python development alias (UV managed Python)
+alias pyd="$HOME/.local/share/uv/python/cpython-3.14.0a5-macos-aarch64-none/bin/python"
+
+# ----------------------------------------------------------------------------
+# Cursor Rules Management
+# ----------------------------------------------------------------------------
+
+# Cursor Rules project management
 alias crget="/Users/Joel/src/my_cursor_rules/copy-to-project.sh"  # Get rules from repo
 alias crput="/Users/Joel/src/my_cursor_rules/copy-to-repo.sh"     # Put rules into repo
-source "/Users/Joel/src/my_cursor_rules/completion.sh"
 
+# Windsurf Rules project management  
 alias wrget="/Users/Joel/src/my_cursor_rules/copy-to-project.sh -w"
 alias wrput="/Users/Joel/src/my_cursor_rules/copy-to-repo.sh -w"
 
-alias claude-config="cursor ~/Library/Application\ Support/Claude/claude_desktop_config.json"
+# Load cursor rules completion
+source "/Users/Joel/src/my_cursor_rules/completion.sh"
 
+# ----------------------------------------------------------------------------
+# Development Environment Shortcuts
+# ----------------------------------------------------------------------------
+
+# Configuration file shortcuts
+alias claude-config="cursor ~/Library/Application\ Support/Claude/claude_desktop_config.json"
 alias dotfiles="cursor ~/src/dotfiles"
 
+# Custom development tools
 alias gi="/Users/Joel/src/gi/dist/cli.js -c"
 alias gid="/Users/Joel/src/gi/dist/cli.js -c -d"
 
+# ----------------------------------------------------------------------------
+# Google Cloud SDK
+# ----------------------------------------------------------------------------
+
+# Google Cloud configuration
 export CLOUDSDK_HOME=/Users/Joel/google-cloud-sdk
 export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3
 export PROJECT_ID=circleci-ai-sandboxes
 
-# The next line updates PATH for the Google Cloud SDK.
+# Google Cloud SDK path and completion
 if [ -f '/Users/Joel/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/Joel/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
 if [ -f '/Users/Joel/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/Joel/google-cloud-sdk/completion.zsh.inc'; fi

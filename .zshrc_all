@@ -1,33 +1,70 @@
-# collection of bash profile things for all my environments
+# ============================================================================
+# ZSH Configuration - All Environments
+# Collection of shell configuration for all my environments
+# ============================================================================
 
-# homebrew
+# ----------------------------------------------------------------------------
+# Package Managers & Environment Setup
+# ----------------------------------------------------------------------------
+
+# Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-## git aliases
+# Load developer environment variables (API keys, etc.)
+# Always located at ~/.dev_env
+. ~/.dev_env
 
+# Example contents of ~/.dev_env:
+# export SENDGRID_USERNAME=foo
+# export SENDGRID_PASSWORD=bar
 
+# ----------------------------------------------------------------------------
+# Shell Appearance & Prompt
+# ----------------------------------------------------------------------------
+
+# Git branch helper function for prompt
+parse_git_branch() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
+# Prompt configuration for zsh
+# Show current directory plus the git branch (in green)
+setopt PROMPT_SUBST
+autoload -U colors && colors
+PROMPT='%~ %{$fg[green]%}$(parse_git_branch)%{$reset_color%} $ '
+
+# ----------------------------------------------------------------------------
+# Git Aliases & Functions
+# ----------------------------------------------------------------------------
+
+# Basic git operations
 alias gs="git status"
 alias ga="git add"
 alias gas="git add src/*"
 
+# Commit operations
 alias gcom="git commit -m"
 alias gcoa="git commit --amend"
 
+# Branch operations
 alias gch="git checkout"
 alias gchm="git checkout main"
 
+# Remote operations
 alias gpl="git pull"
-
 alias gph="git push -u origin"
-
 alias gpf="git push --force-with-lease"
 alias gp="git push"
 
+# GitHub CLI integration
 alias gpr="gh pr create -d"
 alias gpv="gh pr view --web"
 
+# Branch reset helpers
 alias gkillmaster="git fetch origin && git reset --hard origin/master"
 alias gkillmain="git fetch origin && git reset --hard origin/main"
+
+# Reset any branch to origin
 gkill() {
   if [ -z "$1" ]; then
     echo "Branch name required"
@@ -38,32 +75,27 @@ gkill() {
   git reset --hard origin/"$1"
 }
 
-# git branch in prompt.
-parse_git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
-}
-# --- Prompt configuration for zsh ---
-# Show current directory plus the git branch (in green).
-setopt PROMPT_SUBST
-autoload -U colors && colors
-PROMPT='%~ %{$fg[green]%}$(parse_git_branch)%{$reset_color%} $ '
+# ----------------------------------------------------------------------------
+# General Aliases
+# ----------------------------------------------------------------------------
 
-# bash aliases
+# Directory listing
 alias la="ls -a"
 alias ll="ls -la"
+
+# Shell management
 alias reload="source ~/.zshrc"
 
-# loads my developer environmental variables. always located at ~/.dev_env
-# contains api keys and such, to be loaded into projects
-. ~/.dev_env
+# Development tools
+alias mcp-inspect="npx @modelcontextprotocol/inspector"
+alias nu='nvm use'
+alias nr="npm run"
 
-# example of that file
-# export SENDGRID_USERNAME=foo
-# export SENDGRID_PASSWORD=bar
+# ----------------------------------------------------------------------------
+# Custom Scripts & Functions
+# ----------------------------------------------------------------------------
 
-## scripts
-
-# quickly make an update commit but with argument support for the comment
+# Quick commit and push with optional message
 qph() {
   commit_comment=${1:-'update'} 
   echo '-- adding files --'
@@ -75,7 +107,7 @@ qph() {
   echo '-- done --'
 }
 
-# auto call nvm use
+# Auto-switch Node version when entering directories with .nvmrc
 _nvmrc_hook() {
   if [[ $PWD == $PREV_PWD ]]; then
     return
@@ -85,38 +117,43 @@ _nvmrc_hook() {
   [[ -f ".nvmrc" ]] && nvm use
 }
 
-# Auto-run _nvmrc_hook on directory change and before each prompt (zsh only)
+# Register the nvm hook for zsh
 autoload -U add-zsh-hook
 add-zsh-hook chpwd _nvmrc_hook
 add-zsh-hook precmd _nvmrc_hook
 
-alias mcp-inspect="npx @modelcontextprotocol/inspector"
-alias nu='nvm use'
-alias nr="npm run"
+# ----------------------------------------------------------------------------
+# Zsh Completion & Autosuggestions
+# ----------------------------------------------------------------------------
 
-# --- Zsh completion & inline suggestions ---
+# Enable zsh completion system
 autoload -Uz compinit && compinit
-
-# Make the standard Tab completion widget (expand-or-complete) also accept an
-# inline autosuggestion before falling back to normal completion.
-# (binding set inside autosuggestions block below)
 
 # zsh-autosuggestions: inline gray suggestion after cursor
 if [[ -f "$(brew --prefix 2>/dev/null)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
   source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  
   # Show suggestions in a subtle gray
   ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
   
-  # Tab: accept autosuggestion, Shift+Tab: normal completion
+  # Key bindings:
+  # Tab: accept autosuggestion
+  # Shift+Tab: normal completion (files, commands, etc.)
   bindkey '^I' autosuggest-accept           # Tab
   bindkey '^[[Z' expand-or-complete         # Shift+Tab
 fi
 
-# --- Up/Down arrow history substring search (fish-style) ---
+# ----------------------------------------------------------------------------
+# History Search & Navigation
+# ----------------------------------------------------------------------------
+
+# Up/Down arrow history substring search (fish-style)
+# Type a few chars, then Up/Down to cycle through matching commands
 autoload -Uz history-search-end
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
+
 for map in emacs viins; do
-  bindkey -M $map '^[[A' history-beginning-search-backward-end  # Up
-  bindkey -M $map '^[[B' history-beginning-search-forward-end  # Down
+  bindkey -M $map '^[[A' history-beginning-search-backward-end  # Up arrow
+  bindkey -M $map '^[[B' history-beginning-search-forward-end  # Down arrow
 done
