@@ -42,8 +42,11 @@ gkill() {
 parse_git_branch() {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
-# export PS1="\u@\h \W\[\033[32m\]\$(parse_git_branch)\[\033[00m\] $ " old
-export PS1="\W\[\033[32m\]\$(parse_git_branch)\[\033[00m\] $ "
+# --- Prompt configuration for zsh ---
+# Show current directory plus the git branch (in green).
+setopt PROMPT_SUBST
+autoload -U colors && colors
+PROMPT='%~ %{$fg[green]%}$(parse_git_branch)%{$reset_color%} $ '
 
 # bash aliases
 alias la="ls -a"
@@ -82,18 +85,10 @@ _nvmrc_hook() {
   [[ -f ".nvmrc" ]] && nvm use
 }
 
-# Hook _nvmrc_hook correctly depending on the shell
-if [[ -n "$ZSH_VERSION" ]]; then
-  autoload -U add-zsh-hook
-  # Run on directory change and before each prompt
-  add-zsh-hook chpwd _nvmrc_hook
-  add-zsh-hook precmd _nvmrc_hook
-else
-  # Bash fallback – preserve existing behaviour
-  if ! [[ "${PROMPT_COMMAND:-}" =~ _nvmrc_hook ]]; then
-    PROMPT_COMMAND="_nvmrc_hook${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
-  fi
-fi
+# Auto-run _nvmrc_hook on directory change and before each prompt (zsh only)
+autoload -U add-zsh-hook
+add-zsh-hook chpwd _nvmrc_hook
+add-zsh-hook precmd _nvmrc_hook
 
 alias mcp-inspect="npx @modelcontextprotocol/inspector"
 alias nu='nvm use'
