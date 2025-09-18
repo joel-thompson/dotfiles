@@ -93,3 +93,5 @@ export PROJECT_ID=circleci-ai-sandboxes
 # Google Cloud SDK path and completion
 if [ -f '/Users/Joel/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/Joel/google-cloud-sdk/path.zsh.inc'; fi
 if [ -f '/Users/Joel/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/Joel/google-cloud-sdk/completion.zsh.inc'; fi
+
+export PATH="$PATH:$HOME/go/bin"
