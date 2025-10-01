@@ -1,0 +1,26 @@
+# Basic git operations
+alias gs "git status"
+alias ga "git add"
+alias gas "git add src/*"
+
+# Commit operations
+alias gcom "git commit -m"
+alias gcoa "git commit --amend"
+
+# Branch operations
+alias gch "git checkout"
+alias gchm "git checkout main"
+
+# Remote operations
+alias gpl "git pull"
+alias gph "git push -u origin"
+alias gpf "git push --force-with-lease"
+alias gp "git push"
+
+# GitHub CLI integration
+alias gpr "gh pr create -d"
+alias gpv "gh pr view --web"
+
+# Branch reset helpers
+alias gkillmaster "git fetch origin && git reset --hard origin/master"
+alias gkillmain "git fetch origin && git reset --hard origin/main"
