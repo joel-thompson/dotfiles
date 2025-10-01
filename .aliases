@@ -24,3 +24,5 @@ alias gpv "gh pr view --web"
 # Branch reset helpers
 alias gkillmaster "git fetch origin && git reset --hard origin/master"
 alias gkillmain "git fetch origin && git reset --hard origin/main"
+
+alias aur "paru"
