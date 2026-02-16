@@ -7,6 +7,10 @@
 # Package Managers & Environment Setup
 # ----------------------------------------------------------------------------
 
+# add this to my ~/.zshrc
+# . ~/src/dotfiles/.zshrc_personal
+# . ~/src/dotfiles/.zshrc_all
+
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
@@ -94,18 +98,6 @@ alias nr="npm run"
 # ----------------------------------------------------------------------------
 # Custom Scripts & Functions
 # ----------------------------------------------------------------------------
-
-# Quick commit and push with optional message
-qph() {
-  commit_comment=${1:-'update'} 
-  echo '-- adding files --'
-  ga .
-  echo "-- commiting files with comment: $commit_comment --"
-  gcom "$commit_comment"
-  echo '-- pushing files --'
-  git push
-  echo '-- done --'
-}
 
 # Auto-switch Node version when entering directories with .nvmrc
 _nvmrc_hook() {
