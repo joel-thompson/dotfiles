@@ -8,19 +8,7 @@
 # ----------------------------------------------------------------------------
 
 # add this to my ~/.zshrc
-# . ~/src/dotfiles/.zshrc_personal
 # . ~/src/dotfiles/.zshrc_all
-
-# Homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
-# Load developer environment variables (API keys, etc.)
-# Always located at ~/.dev_env
-. ~/.dev_env
-
-# Example contents of ~/.dev_env:
-# export SENDGRID_USERNAME=foo
-# export SENDGRID_PASSWORD=bar
 
 # ----------------------------------------------------------------------------
 # Shell Appearance & Prompt
@@ -114,26 +102,7 @@ autoload -U add-zsh-hook
 add-zsh-hook chpwd _nvmrc_hook
 add-zsh-hook precmd _nvmrc_hook
 
-# ----------------------------------------------------------------------------
-# Zsh Completion & Autosuggestions
-# ----------------------------------------------------------------------------
-
-# Enable zsh completion system
 autoload -Uz compinit && compinit
-
-# zsh-autosuggestions: inline gray suggestion after cursor
-if [[ -f "$(brew --prefix 2>/dev/null)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-  source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  
-  # Show suggestions in a subtle gray
-  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
-  
-  # Key bindings:
-  # Tab: accept autosuggestion
-  # Shift+Tab: normal completion (files, commands, etc.)
-  bindkey '^I' autosuggest-accept           # Tab
-  bindkey '^[[Z' expand-or-complete         # Shift+Tab
-fi
 
 # ----------------------------------------------------------------------------
 # History Search & Navigation
