@@ -60,31 +60,12 @@ export PATH="/Users/Joel/.codeium/windsurf/bin:$PATH"
 alias pyd="$HOME/.local/share/uv/python/cpython-3.14.0a5-macos-aarch64-none/bin/python"
 
 # ----------------------------------------------------------------------------
-# Cursor Rules Management
-# ----------------------------------------------------------------------------
-
-# Cursor Rules project management
-alias crget="/Users/Joel/src/my_cursor_rules/copy-to-project.sh"  # Get rules from repo
-alias crput="/Users/Joel/src/my_cursor_rules/copy-to-repo.sh"     # Put rules into repo
-
-# Windsurf Rules project management  
-alias wrget="/Users/Joel/src/my_cursor_rules/copy-to-project.sh -w"
-alias wrput="/Users/Joel/src/my_cursor_rules/copy-to-repo.sh -w"
-
-# Load cursor rules completion
-source "/Users/Joel/src/my_cursor_rules/completion.sh"
-
-# ----------------------------------------------------------------------------
 # Development Environment Shortcuts
 # ----------------------------------------------------------------------------
 
 # Configuration file shortcuts
 alias claude-config="cursor ~/Library/Application\ Support/Claude/claude_desktop_config.json"
 alias dotfiles="cursor ~/src/dotfiles"
-
-# Custom development tools
-alias gi="/Users/Joel/src/gi/dist/cli.js -c"
-alias gid="/Users/Joel/src/gi/dist/cli.js -c -d"
 
 # ----------------------------------------------------------------------------
 # Google Cloud SDK
