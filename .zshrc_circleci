@@ -96,3 +96,56 @@ if [[ -f "$(brew --prefix 2>/dev/null)/share/zsh-autosuggestions/zsh-autosuggest
   bindkey '^I' autosuggest-accept           # Tab
   bindkey '^[[Z' expand-or-complete         # Shift+Tab
 fi
+
+# MARVIN - AI Chief of Staff
+marvin() {
+    echo -e '\e[1;33m███╗   ███╗    █████╗    ██████╗   ██╗   ██╗  ██╗   ███╗   ██╗   \e[0m'
+    echo -e '\e[1;33m████╗ ████║   ██╔══██╗   ██╔══██╗  ██║   ██║  ██║   ████╗  ██║   \e[0m'
+    echo -e '\e[1;33m██╔████╔██║   ███████║   ██████╔╝  ██║   ██║  ██║   ██╔██╗ ██║   \e[0m'
+    echo -e '\e[1;33m██║╚██╔╝██║   ██╔══██║   ██╔══██╗  ╚██╗ ██╔╝  ██║   ██║╚██╗██║   \e[0m'
+    echo -e '\e[1;33m██║ ╚═╝ ██║██╗██║  ██║██╗██║  ██║██╗╚████╔╝██╗██║██╗██║ ╚████║██╗\e[0m'
+    echo -e '\e[1;33m╚═╝     ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝ ╚═══╝ ╚═╝╚═╝╚═╝╚═╝  ╚═══╝╚═╝\e[0m'
+    echo ''
+    cd ~/marvin && claude --dangerously-skip-permissions --add-dir ~/src
+}
+
+# Kill the process using a port.
+portk() {
+  if [ "${1-}" = "" ] || [ "$#" -ne 1 ]; then
+    echo "Usage: portk <port>" >&2
+    return 1
+  fi
+
+  local port="$1"
+
+  if ! [[ "$port" =~ ^[0-9]+$ ]] || [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+    echo "portk: port must be an integer between 1 and 65535" >&2
+    return 1
+  fi
+
+  local pids
+  pids="$(lsof -t -i :"$port" 2>/dev/null | sort -u || true)"
+
+  if [ -z "$pids" ]; then
+    echo "portk: no process found on port $port"
+    return 0
+  fi
+
+  echo "portk: stopping process(es) on port $port: $pids"
+  kill $pids
+
+  sleep 1
+
+  local remaining_pids
+  remaining_pids="$(lsof -t -i :"$port" 2>/dev/null | sort -u || true)"
+
+  if [ -n "$remaining_pids" ]; then
+    echo "portk: forcing shutdown for: $remaining_pids"
+    kill -9 $remaining_pids
+  fi
+
+  echo "portk: port $port is clear"
+}
+
+# Browser-Use
+export PATH="/Users/Joel/.browser-use-env/bin:/Users/Joel/.local/bin:$PATH"
