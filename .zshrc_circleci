@@ -15,10 +15,23 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # Ruby version management
 eval "$(rbenv init - zsh)"
 
-# Python version management
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
+# Python version management via uv
+export UV_PYTHON=3.13
+
+pyuse() {
+  local py
+  py=$(uv python find "$1" 2>/dev/null)
+  if [[ -z "$py" ]]; then
+    echo "Python $1 not found. Run: uv python install $1"
+    return 1
+  fi
+  export UV_PYTHON="$1"
+  ln -sf "$py" ~/.local/bin/python
+  ln -sf "$py" ~/.local/bin/python3
+  echo "Switched to $(python --version)"
+}
+
+alias pip='uv pip --system'
 
 # Node.js version management (NVM)
 export NVM_DIR=$HOME/.nvm
@@ -148,4 +161,4 @@ portk() {
 }
 
 # Browser-Use
-export PATH="/Users/Joel/.browser-use-env/bin:/Users/Joel/.local/bin:$PATH"
+export PATH="/Users/Joel/.local/bin:$PATH"
