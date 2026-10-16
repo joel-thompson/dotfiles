@@ -67,144 +67,23 @@ gkill() {
   git reset --hard origin/"$1"
 }
 
-# Resolve the remote-tracking ref for the repo's default branch (origin/main, origin/master, ...)
-_git_main_ref() {
-  local head_ref=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
-  if [ -n "$head_ref" ]; then
-    echo "$head_ref"
-    return 0
-  fi
-  local b
-  for b in main master; do
-    if git show-ref --verify --quiet "refs/remotes/origin/$b"; then
-      echo "origin/$b"
-      return 0
-    fi
-  done
-  return 1
-}
+# Git worktree helpers. The logic lives in bin/gwt-worktree so scripts and agents
+# can call it without sourcing this file; these wrappers add the cd.
+GWT_BIN="${${(%):-%x}:A:h}/bin/gwt-worktree"
 
-# All worktrees live here, named <repo>-<branch>
-GWT_ROOT="${GWT_ROOT:-$HOME/src/worktrees}"
-
-# Path of the repo's main worktree, even when called from inside a linked worktree
-_gwt_main_root() {
-  git worktree list --porcelain 2>/dev/null | sed -n '1s/^worktree //p'
-}
-
-# Full destination path for <branch>'s worktree in the current repo
-_gwt_path() {
-  local main_root=$(_gwt_main_root)
-  if [ -z "$main_root" ]; then
-    return 1
-  fi
-  echo "$GWT_ROOT/$(basename "$main_root")-${1}"
-}
-
-# Git worktree helpers
 gwt() {
-  if [ -z "$1" ]; then
-    echo "Git worktree helpers:"
-    echo "  gwt  <branch> [start-point]  Create worktree + branch, cd into it"
-    echo "  gwtl                         List all worktrees"
-    echo "  gwtr <branch>                Remove a worktree + its local branch"
-    echo ""
-    echo "Worktrees are created in $GWT_ROOT as <repo>-<branch>"
-    echo ""
-    echo "Examples:"
-    echo "  gwt my-feature               Branch from up-to-date origin/main (default)"
-    echo "  gwt my-feature HEAD          Branch from current HEAD instead"
-    echo "  gwt my-feature v1.2.3        Branch from any commit, tag, or branch"
-    return 1
-  fi
-  local repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
-  if [ -z "$repo_root" ]; then
-    echo "Not in a git repository"
-    return 1
-  fi
-  local branch="$1"
-  local worktree_path=$(_gwt_path "$branch")
-  if [ -z "$worktree_path" ]; then
-    echo "Could not determine the main worktree path"
-    return 1
-  fi
-  mkdir -p "$GWT_ROOT" || return 1
-  if git show-ref --verify --quiet "refs/heads/$branch"; then
-    echo "Using existing branch '$branch'"
-    git worktree add "$worktree_path" "$branch" && cd "$worktree_path"
-  elif [ -n "$2" ]; then
-    echo "Creating new branch '$branch' from '$2'"
-    git worktree add --no-track -b "$branch" "$worktree_path" "$2" && cd "$worktree_path"
-  else
-    echo "Fetching origin..."
-    if ! git fetch --quiet origin; then
-      echo "'git fetch origin' failed - not creating the worktree"
-      return 1
-    fi
-    local main_ref=$(_git_main_ref)
-    if [ -z "$main_ref" ]; then
-      echo "Could not determine the default branch (no origin/HEAD, origin/main, or origin/master)"
-      echo "Pass a start point explicitly: gwt $branch <start-point>"
-      return 1
-    fi
-    if [ -n "$(git status --porcelain)" ]; then
-      echo "Note: uncommitted changes in $repo_root are untouched and stay there"
-    fi
-    echo "Creating new branch '$branch' from '$main_ref'"
-    git worktree add --no-track -b "$branch" "$worktree_path" "$main_ref" && cd "$worktree_path"
-  fi
-  if [ ! -d "$worktree_path" ]; then
-    echo "Worktree creation failed"
-    return 1
-  fi
-  if [ -d "$repo_root/.claude" ]; then
-    cp -r "$repo_root/.claude" "$worktree_path/.claude"
-    echo "Copied .claude settings"
-  fi
+  local dir
+  dir=$("$GWT_BIN" add "$@") || return $?
+  [ -n "$dir" ] && cd "$dir"
+}
+
+gwtr() {
+  local dir
+  dir=$("$GWT_BIN" rm "$@") || return $?
+  [ -n "$dir" ] && cd "$dir"
 }
 
 alias gwtl="git worktree list"
-
-gwtr() {
-  if [ -z "$1" ]; then
-    echo "Usage: gwtr <branch-name>"
-    return 1
-  fi
-  local branch="$1"
-  local worktree_path=$(_gwt_path "$branch")
-  local main_root=$(_gwt_main_root)
-  if [ -z "$worktree_path" ] || [ -z "$main_root" ]; then
-    echo "Not in a git repository"
-    return 1
-  fi
-  # Step out of the worktree before deleting it, or the shell is left in a dead directory
-  local start_dir=$PWD
-  local moved=""
-  if [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$worktree_path" ]; then
-    cd "$main_root" || return 1
-    moved=1
-  fi
-  if ! git worktree remove "$worktree_path"; then
-    cd "$start_dir" 2>/dev/null
-    return 1
-  fi
-  echo "Removed worktree $worktree_path"
-  if [ -n "$moved" ]; then
-    echo "Moved to $main_root"
-  fi
-  local branch_sha=$(git rev-parse --short "$branch" 2>/dev/null)
-  if [ -z "$branch_sha" ]; then
-    return 0
-  fi
-  if git branch -d "$branch" >/dev/null 2>&1; then
-    echo "Deleted local branch '$branch' (merged)"
-  elif git branch -D "$branch" >/dev/null 2>&1; then
-    echo "Deleted local branch '$branch' (was $branch_sha, not merged)"
-    echo "Recover it with: git branch $branch $branch_sha"
-  else
-    echo "Could not delete local branch '$branch' - is it checked out elsewhere?"
-  fi
-}
 
 # ----------------------------------------------------------------------------
 # General Aliases
@@ -242,6 +121,14 @@ add-zsh-hook chpwd _nvmrc_hook
 add-zsh-hook precmd _nvmrc_hook
 
 autoload -Uz compinit && compinit
+
+# Play silence on a loop so macOS doesn't suspend the Bluetooth stream
+# (stops the click on Bose QC headphones when a sound starts). Ctrl-C to stop.
+# One continuous process: restarting a player between files suspends the stream too.
+bose-keepalive() {
+  echo "Keeping audio stream alive. Ctrl-C to stop."
+  ffplay -nodisp -loglevel quiet -f lavfi -i anullsrc=r=44100:cl=stereo
+}
 
 # ----------------------------------------------------------------------------
 # History Search & Navigation

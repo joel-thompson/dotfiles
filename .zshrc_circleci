@@ -99,10 +99,10 @@ export PATH="$PATH:/Users/Joel/.local/bin"
 # zsh-autosuggestions: inline gray suggestion after cursor
 if [[ -f "$(brew --prefix 2>/dev/null)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
   source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  
+
   # Show suggestions in a subtle gray
   ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
-  
+
   # Key bindings:
   # Tab: accept autosuggestion
   # Shift+Tab: normal completion (files, commands, etc.)
@@ -162,3 +162,5 @@ portk() {
 
 # Browser-Use
 export PATH="/Users/Joel/.local/bin:$PATH"
+
+alias chunkd=/Users/Joel/src/chunk-cli/dist/chunk

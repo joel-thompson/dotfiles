@@ -1,0 +1,182 @@
+#!/usr/bin/env zsh
+# Git worktree helper: gwt-worktree add|rm|list
+#
+# Messages go to stderr. stdout is reserved for the directory the caller should
+# cd into (a script cannot cd its parent shell): `add` prints the new worktree,
+# `rm` prints the main checkout if the caller was inside the removed worktree.
+# The gwt / gwtr shell functions in .zshrc_all wrap this and do the cd.
+exec 3>&1 1>&2
+
+# All worktrees live here, named <repo>-<branch>
+GWT_ROOT="${GWT_ROOT:-$HOME/src/worktrees}"
+
+# Resolve the remote-tracking ref for the repo's default branch (origin/main, origin/master, ...)
+main_ref() {
+  local head_ref=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null)
+  if [ -n "$head_ref" ]; then
+    echo "$head_ref"
+    return 0
+  fi
+  local b
+  for b in main master; do
+    if git show-ref --verify --quiet "refs/remotes/origin/$b"; then
+      echo "origin/$b"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Path of the repo's main worktree, even when called from inside a linked worktree
+main_root() {
+  git worktree list --porcelain 2>/dev/null | sed -n '1s/^worktree //p'
+}
+
+# Full destination path for <branch>'s worktree in the current repo
+wt_path() {
+  local root=$(main_root)
+  if [ -z "$root" ]; then
+    return 1
+  fi
+  echo "$GWT_ROOT/$(basename "$root")-${1}"
+}
+
+usage() {
+  echo "Git worktree helpers:"
+  echo "  gwt  <branch> [start-point]  Create worktree + branch, cd into it"
+  echo "  gwtl                         List all worktrees"
+  echo "  gwtr <branch>                Remove a worktree + its local branch"
+  echo ""
+  echo "Worktrees are created in $GWT_ROOT as <repo>-<branch>"
+  echo ""
+  echo "Examples:"
+  echo "  gwt my-feature               Branch from up-to-date origin/main (default)"
+  echo "  gwt my-feature HEAD          Branch from current HEAD instead"
+  echo "  gwt my-feature v1.2.3        Branch from any commit, tag, or branch"
+}
+
+cmd_add() {
+  if [ -z "$1" ]; then
+    usage
+    return 1
+  fi
+  local repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [ -z "$repo_root" ]; then
+    echo "Not in a git repository"
+    return 1
+  fi
+  local branch="$1"
+  local worktree_path=$(wt_path "$branch")
+  if [ -z "$worktree_path" ]; then
+    echo "Could not determine the main worktree path"
+    return 1
+  fi
+  mkdir -p "$GWT_ROOT" || return 1
+  if git show-ref --verify --quiet "refs/heads/$branch"; then
+    echo "Using existing branch '$branch'"
+    git worktree add "$worktree_path" "$branch" || return 1
+  elif [ -n "$2" ]; then
+    echo "Creating new branch '$branch' from '$2'"
+    git worktree add --no-track -b "$branch" "$worktree_path" "$2" || return 1
+  else
+    echo "Fetching origin..."
+    if ! git fetch --quiet origin; then
+      echo "'git fetch origin' failed - not creating the worktree"
+      return 1
+    fi
+    local ref=$(main_ref)
+    if [ -z "$ref" ]; then
+      echo "Could not determine the default branch (no origin/HEAD, origin/main, or origin/master)"
+      echo "Pass a start point explicitly: gwt $branch <start-point>"
+      return 1
+    fi
+    if [ -n "$(git status --porcelain)" ]; then
+      echo "Note: uncommitted changes in $repo_root are untouched and stay there"
+    fi
+    echo "Creating new branch '$branch' from '$ref'"
+    git worktree add --no-track -b "$branch" "$worktree_path" "$ref" || return 1
+  fi
+  if [ ! -d "$worktree_path" ]; then
+    echo "Worktree creation failed"
+    return 1
+  fi
+  # Checked-in .claude files come with the checkout; copy only untracked/ignored ones
+  local f copied=0
+  while IFS= read -r -d '' f; do
+    case "$f" in .claude/worktrees/*) continue ;; esac
+    mkdir -p "$worktree_path/$(dirname "$f")" && cp "$repo_root/$f" "$worktree_path/$f" && copied=$((copied + 1))
+  done < <(git -C "$repo_root" ls-files --others -z -- .claude)
+  if [ "$copied" -gt 0 ]; then
+    echo "Copied $copied untracked .claude file(s)"
+  fi
+  for f in _joel-specs .aigate.yml; do
+    if [ -e "$repo_root/$f" ] && [ ! -e "$worktree_path/$f" ] && [ ! -L "$worktree_path/$f" ]; then
+      ln -s "$repo_root/$f" "$worktree_path/$f" && echo "Symlinked $f"
+      # Gitignore patterns like "_joel-specs/" don't match symlinks, and an untracked
+      # symlink makes `git worktree remove` refuse. Exclude it locally (shared by all worktrees).
+      local exclude=$(git -C "$worktree_path" rev-parse --path-format=absolute --git-path info/exclude)
+      grep -qxF "/$f" "$exclude" 2>/dev/null || { mkdir -p "$(dirname "$exclude")" && echo "/$f" >> "$exclude"; }
+    fi
+  done
+  # Claude Code prompts on every write that resolves through the _joel-specs symlink to
+  # outside the worktree. Pre-approve the real directory for this worktree only.
+  if [ -L "$worktree_path/_joel-specs" ]; then
+    local specs_real=${worktree_path:A}/_joel-specs
+    specs_real=${specs_real:A}
+    local settings="$worktree_path/.claude/settings.local.json"
+    mkdir -p "$worktree_path/.claude"
+    [ -s "$settings" ] || echo '{}' > "$settings"
+    local updated=$(jq --arg d "$specs_real" '.permissions.additionalDirectories = ((.permissions.additionalDirectories // []) + [$d] | unique)' "$settings") \
+      && [ -n "$updated" ] && echo "$updated" > "$settings" && echo "Allowed Claude access to $specs_real"
+  fi
+  # .env is copied, not linked, so a worktree can diverge without touching the main checkout
+  if [ -f "$repo_root/.env" ] && [ ! -e "$worktree_path/.env" ]; then
+    cp "$repo_root/.env" "$worktree_path/.env" && echo "Copied .env"
+  fi
+  echo "$worktree_path" >&3
+}
+
+cmd_rm() {
+  if [ -z "$1" ]; then
+    echo "Usage: gwtr <branch-name>"
+    return 1
+  fi
+  local branch="$1"
+  local worktree_path=$(wt_path "$branch")
+  local root=$(main_root)
+  if [ -z "$worktree_path" ] || [ -z "$root" ]; then
+    echo "Not in a git repository"
+    return 1
+  fi
+  # Step out of the worktree before deleting it; tell the caller to follow
+  local moved=""
+  if [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$worktree_path" ]; then
+    cd "$root" || return 1
+    moved=1
+  fi
+  git worktree remove "$worktree_path" || return 1
+  echo "Removed worktree $worktree_path"
+  if [ -n "$moved" ]; then
+    echo "Moved to $root"
+    echo "$root" >&3
+  fi
+  local branch_sha=$(git rev-parse --short "$branch" 2>/dev/null)
+  if [ -z "$branch_sha" ]; then
+    return 0
+  fi
+  if git branch -d "$branch" > /dev/null 2>&1; then
+    echo "Deleted local branch '$branch' (merged)"
+  elif git branch -D "$branch" > /dev/null 2>&1; then
+    echo "Deleted local branch '$branch' (was $branch_sha, not merged)"
+    echo "Recover it with: git branch $branch $branch_sha"
+  else
+    echo "Could not delete local branch '$branch' - is it checked out elsewhere?"
+  fi
+}
+
+case "$1" in
+  add) shift; cmd_add "$@" ;;
+  rm) shift; cmd_rm "$@" ;;
+  list) git worktree list ;;
+  *) usage; exit 1 ;;
+esac
