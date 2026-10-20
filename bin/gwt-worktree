@@ -133,6 +133,13 @@ cmd_add() {
   if [ -f "$repo_root/.env" ] && [ ! -e "$worktree_path/.env" ]; then
     cp "$repo_root/.env" "$worktree_path/.env" && echo "Copied .env"
   fi
+  # .codegraph is copied, not linked: the index and daemon are per-checkout
+  if [ -f "$repo_root/.codegraph/codegraph.db" ] && [ ! -e "$worktree_path/.codegraph" ]; then
+    mkdir -p "$worktree_path/.codegraph" \
+      && sqlite3 "$repo_root/.codegraph/codegraph.db" ".backup '$worktree_path/.codegraph/codegraph.db'" \
+      && (cd "$worktree_path" && codegraph sync -q) \
+      && echo "Copied .codegraph index"
+  fi
   echo "$worktree_path" >&3
 }
 
